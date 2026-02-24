@@ -29,7 +29,7 @@ public class Main {
     menor o igual a 21, se le da la opción de seguir o plantarse.
      */
     private static void turnoJugador(Jugador jugador){
-
+        System.out.println("Hola que tal");
     }
 
     /*
