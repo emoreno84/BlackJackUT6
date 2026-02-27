@@ -15,6 +15,22 @@ public class BlackJack {
         crupier = new ArrayList<>();
     }
 
+    public Baraja getBaraja() {
+        return baraja;
+    }
+
+    public Map<Jugador, List<Carta>> getManos() {
+        return manos;
+    }
+
+    public Map<Jugador, Integer> getApuestas() {
+        return apuestas;
+    }
+
+    public List<Carta> getCrupier() {
+        return crupier;
+    }
+
     public int calcularPuntuacion(List<Carta> mano){
         int puntuacion = 0;
         int numAses = 0;

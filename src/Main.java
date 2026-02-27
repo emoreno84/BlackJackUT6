@@ -1,7 +1,10 @@
 import java.util.*;
+import java.util.random.RandomGenerator;
 
 public class Main {
     private static Scanner teclado = new Scanner(System.in);
+
+    private static BlackJack blackJack;
 
     public static void main(String[] args) {
         System.out.println("Bienvenido al BlackJack 21");
@@ -20,7 +23,7 @@ public class Main {
             }
         }while (respuesta);
 
-        BlackJack blackJack = new BlackJack(getMapaJugadores(listadoNombres), getMapaJugadoresPuntuacion(listadoNombres));
+        blackJack = new BlackJack(getMapaJugadores(listadoNombres), getMapaJugadoresPuntuacion(listadoNombres));
 
     }
 
@@ -29,14 +32,29 @@ public class Main {
     menor o igual a 21, se le da la opción de seguir o plantarse.
      */
     private static void turnoJugador(Jugador jugador){
-        System.out.println("Hola que tal");
+        System.out.println("Turno de " + jugador.getNombre());
+        System.out.println("¿Quiere otra carta? s/N");
+        List<Carta> listadoCartas = blackJack.getManos().get(jugador);
+        while(teclado.next().equalsIgnoreCase("s") && blackJack.calcularPuntuacion(listadoCartas) < 21){
+            Carta carta = blackJack.getBaraja().repartirCarta();
+            listadoCartas.add(carta);
+            blackJack.getManos().put(jugador, listadoCartas);
+            Map.Entry<Jugador, List<Carta>> entrada = Map.entry(jugador, listadoCartas);
+            blackJack.mostrarMano(entrada);
+            System.out.println("¿Quiere otra carta? s/N");
+        }
     }
 
     /*
     Turno del crupier
      */
     private static void turnoCrupier(){
-
+        while (blackJack.calcularPuntuacion(blackJack.getCrupier()) < 17){
+            blackJack.getCrupier().add(blackJack.getBaraja().repartirCarta());
+            Jugador crupierJug = new Jugador("Crupier");
+            blackJack.mostrarMano(Map.entry(crupierJug, blackJack.getCrupier()));
+            teclado.next();
+        }
     }
 
     /*
@@ -44,6 +62,18 @@ public class Main {
     devuelve null.
      */
     private static Jugador calcularResultados(){
+        int puntuacionGanadora = 0;
+        Jugador jugadorGanador = null;
+        for (Jugador jugador : blackJack.getApuestas().keySet()){
+            if (blackJack.getApuestas().get(jugador) > puntuacionGanadora && blackJack.getApuestas().get(jugador) <= 21){
+                puntuacionGanadora = blackJack.getApuestas().get(jugador);
+                jugadorGanador = jugador;
+            }
+        }
+        int puntuacionCrupier = blackJack.calcularPuntuacion(blackJack.getCrupier());
+        if (jugadorGanador != null && puntuacionGanadora > puntuacionCrupier){
+            return jugadorGanador;
+        }
         return null;
     }
 
